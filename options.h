@@ -1,0 +1,10 @@
+extern unsigned int character_index;
+extern unsigned int start_floor;
+extern unsigned int eye_candy;
+extern bool fullscreen;
+extern unsigned int volume_sfx, volume_music;
+extern int key_left;
+extern int key_right;
+extern int key_jump;
+extern int key_pause;
+extern bool rejump;
