@@ -62,7 +62,7 @@ void draw_floors(void) {
 
 void draw_character(void) {
 	al_draw_bitmap(characters[character_index].gfx.idle1,
-			it_state.x, it_state.y, 0);
+			it_state.x - 14, it_state.y - 51, 0);
 }
 
 void draw_game(void) {
