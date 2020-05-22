@@ -2,6 +2,7 @@
 #include <allegro5/allegro_audio.h>
 #include <time.h>
 
+#include "game.h"
 #include "gfx.h"
 #include "sfx.h"
 #include "options.h"
