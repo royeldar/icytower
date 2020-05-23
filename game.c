@@ -30,6 +30,7 @@ void do_tick(void) {
 }
 
 void draw_background(void) {
+	al_clear_to_color(al_map_rgb(0, 0, 0));
 }
 
 void draw_floor(FLOOR *floor, unsigned int n) {
