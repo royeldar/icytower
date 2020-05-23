@@ -67,6 +67,11 @@ void start_game(void) {
 	initialize_game();
 }
 
+void pause_game(void) {
+	al_play_sample(characters[character_index].sfx.pause, volume_sfx / 10.0,
+			0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+}
+
 void main_menu(void) {
 	stop_music(characters[character_index].sfx.bgmusic);
 	play_music(audio_stream_bg_menu);
@@ -154,14 +159,10 @@ int main() {
 			al_resume_timer(timer);
 			break;
 		case ALLEGRO_EVENT_DISPLAY_SWITCH_OUT:
-			/* pause the game (as if pause was pressed) */
-			if (game_state == PLAYING)
-				game_state = PAUSE;
+			/* pause the game */
 			break;
 		case ALLEGRO_EVENT_DISPLAY_SWITCH_IN:
 			/* resume the game */
-			if (game_state == PAUSE)
-				game_state = PLAYING;
 			break;
 		case ALLEGRO_EVENT_TIMER:
 			switch (game_state) {
@@ -216,11 +217,13 @@ int main() {
 				}
 				break;
 			case PLAYING:
-				if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+				if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
 					game_state = ESCAPE;
-				else if (event.keyboard.keycode == key_pause)
+					pause_game();
+				} else if (event.keyboard.keycode == key_pause) {
 					game_state = PAUSE;
-				else if (event.keyboard.keycode == key_left)
+					pause_game();
+				} else if (event.keyboard.keycode == key_left)
 					press_left();
 				else if (event.keyboard.keycode == key_right)
 					press_right();
@@ -232,6 +235,8 @@ int main() {
 				break;
 			case ESCAPE:
 				if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+					al_play_sample(sample_tryagain, volume_sfx / 10.0,
+							0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
 					game_state = TITLE;
 					main_menu();
 				} else {
