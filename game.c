@@ -15,8 +15,14 @@ int keys;
 
 enum {
 	ANIMATION_IDLE,
+	ANIMATION_CHOCK,
+	ANIMATION_EDGE_LEFT,
+	ANIMATION_EDGE_RIGHT,
 	ANIMATION_WALK_LEFT,
 	ANIMATION_WALK_RIGHT,
+	ANIMATION_FLY,
+	ANIMATION_FLY_LEFT,
+	ANIMATION_FLY_RIGHT,
 	ANIMATION_ROTATE
 } animation;
 
@@ -37,7 +43,55 @@ void release_right(void) { keys &= ~KEY_RIGHT; }
 void release_jump(void) { keys &= ~KEY_JUMP; }
 
 void do_tick(void) {
+	int prev_status = it_state.status;
 	play_frame(&it_state, keys);
+	switch (it_state.status) {
+	case STATUS_IDLE:
+		if (it_state.dx > 0.05) {
+			if (animation != ANIMATION_WALK_RIGHT) {
+				animation = ANIMATION_WALK_RIGHT;
+				animation_frame = 0;
+			}
+		} else if (it_state.dx < -0.05) {
+			if (animation != ANIMATION_WALK_LEFT) {
+				animation = ANIMATION_WALK_LEFT;
+				animation_frame = 0;
+			}
+		} else if (it_state.y >= 406 && it_state.speed > 0) {
+			if (animation != ANIMATION_CHOCK) {
+				animation = ANIMATION_CHOCK;
+				animation_frame = 0;
+			}
+		} else {
+			if (animation != ANIMATION_IDLE) {
+				animation = ANIMATION_IDLE;
+				animation_frame = 0;
+			}
+		}
+		break;
+	case STATUS_FLY_UP:
+	case STATUS_FLY_IDLE:
+	case STATUS_FLY_DOWN:
+		if (it_state.dx > 0.05) {
+			if (animation != ANIMATION_FLY_RIGHT) {
+				animation = ANIMATION_FLY_RIGHT;
+				animation_frame = 0;
+			}
+		} else if (it_state.dx < -0.05) {
+			if (animation != ANIMATION_FLY_LEFT) {
+				animation = ANIMATION_FLY_LEFT;
+				animation_frame = 0;
+			}
+		} else {
+			if (animation != ANIMATION_FLY &&
+					animation != ANIMATION_FLY_LEFT &&
+					animation != ANIMATION_FLY_RIGHT) {
+				animation = ANIMATION_FLY;
+				animation_frame = 0;
+			}
+		}
+		break;
+	}
 	++animation_frame;
 }
 
@@ -91,23 +145,128 @@ void draw_floors(void) {
 }
 
 void draw_character(void) {
+	ALLEGRO_BITMAP *character;
+	int width, height;
 	switch (animation) {
 	case ANIMATION_IDLE:
 		switch ((animation_frame / 13) % 4) {
 		case 0:
 		case 2:
-			al_draw_bitmap(characters[character_index].gfx.idle1,
-			it_state.x - 14, it_state.y - 51, 0);
+			character = characters[character_index].gfx.idle1;
 			break;
 		case 1:
-			al_draw_bitmap(characters[character_index].gfx.idle2,
-			it_state.x - 14, it_state.y - 51, 0);
+			character = characters[character_index].gfx.idle2;
 			break;
 		case 3:
-			al_draw_bitmap(characters[character_index].gfx.idle3,
-			it_state.x - 14, it_state.y - 51, 0);
+			character = characters[character_index].gfx.idle3;
 			break;
 		}
+		width = al_get_bitmap_width(character);
+		height = al_get_bitmap_height(character);
+		al_draw_bitmap(character,
+				it_state.x - width / 2 + 1,
+				it_state.y - height + 1,
+				0);
+		break;
+	case ANIMATION_CHOCK:
+		character = characters[character_index].gfx.chock;
+		width = al_get_bitmap_width(character);
+		height = al_get_bitmap_height(character);
+		al_draw_bitmap(character,
+				it_state.x - width / 2 + 1,
+				it_state.y - height + 1,
+				0);
+		break;
+	case ANIMATION_WALK_LEFT:
+		switch ((animation_frame / 10) % 4) {
+		case 0:
+			character = characters[character_index].gfx.walk1;
+			break;
+		case 1:
+			character = characters[character_index].gfx.walk2;
+			break;
+		case 2:
+			character = characters[character_index].gfx.walk3;
+			break;
+		case 3:
+			character = characters[character_index].gfx.walk4;
+			break;
+		}
+		width = al_get_bitmap_width(character);
+		height = al_get_bitmap_height(character);
+		al_draw_bitmap(character,
+				it_state.x - width / 2 + 1,
+				it_state.y - height + 1,
+				ALLEGRO_FLIP_HORIZONTAL);
+		break;
+	case ANIMATION_WALK_RIGHT:
+		switch ((animation_frame / 10) % 4) {
+		case 0:
+			character = characters[character_index].gfx.walk1;
+			break;
+		case 1:
+			character = characters[character_index].gfx.walk2;
+			break;
+		case 2:
+			character = characters[character_index].gfx.walk3;
+			break;
+		case 3:
+			character = characters[character_index].gfx.walk4;
+			break;
+		}
+		width = al_get_bitmap_width(character);
+		height = al_get_bitmap_height(character);
+		al_draw_bitmap(character,
+				it_state.x - width / 2 + 1,
+				it_state.y - height + 1,
+				0);
+		break;
+	case ANIMATION_FLY:
+		character = characters[character_index].gfx.jump;
+		width = al_get_bitmap_width(character);
+		height = al_get_bitmap_height(character);
+		al_draw_bitmap(character,
+				it_state.x - width / 2 + 1,
+				it_state.y - height + 1,
+				0);
+		break;
+	case ANIMATION_FLY_LEFT:
+		switch (it_state.status) {
+		case STATUS_FLY_UP:
+			character = characters[character_index].gfx.jump1;
+			break;
+		case STATUS_FLY_IDLE:
+			character = characters[character_index].gfx.jump2;
+			break;
+		case STATUS_FLY_DOWN:
+			character = characters[character_index].gfx.jump3;
+			break;
+		}
+		width = al_get_bitmap_width(character);
+		height = al_get_bitmap_height(character);
+		al_draw_bitmap(character,
+				it_state.x - width / 2 + 1,
+				it_state.y - height + 1,
+				ALLEGRO_FLIP_HORIZONTAL);
+		break;
+	case ANIMATION_FLY_RIGHT:
+		switch (it_state.status) {
+		case STATUS_FLY_UP:
+			character = characters[character_index].gfx.jump1;
+			break;
+		case STATUS_FLY_IDLE:
+			character = characters[character_index].gfx.jump2;
+			break;
+		case STATUS_FLY_DOWN:
+			character = characters[character_index].gfx.jump3;
+			break;
+		}
+		width = al_get_bitmap_width(character);
+		height = al_get_bitmap_height(character);
+		al_draw_bitmap(character,
+				it_state.x - width / 2 + 1,
+				it_state.y - height + 1,
+				0);
 		break;
 	}
 }
