@@ -65,6 +65,7 @@ void start_game(void) {
 	stop_music(audio_stream_bg_menu);
 	play_music(characters[character_index].sfx.bgmusic);
 	initialize_game();
+	draw_game();
 }
 
 void pause_game(void) {
