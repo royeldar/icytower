@@ -48,6 +48,23 @@ void draw_floor(FLOOR *floor, unsigned int n) {
 		x += 16;
 	}
 	al_draw_bitmap(type->right, x, y, 0);
+	if (n > 0 && n % 10 == 0) {
+		x = (floor->start + floor->end) * 8;
+		y += 16;
+		al_draw_bitmap(type->sign, x, y, 0);
+		x += al_get_bitmap_width(type->sign) / 2;
+		y += 6;
+		al_draw_textf(font_native, al_map_rgb(0, 0, 0), x - 1, y,
+				ALLEGRO_ALIGN_CENTRE, "%u", n);
+		al_draw_textf(font_native, al_map_rgb(0, 0, 0), x + 1, y,
+				ALLEGRO_ALIGN_CENTRE, "%u", n);
+		al_draw_textf(font_native, al_map_rgb(0, 0, 0), x, y - 1,
+				ALLEGRO_ALIGN_CENTRE, "%u", n);
+		al_draw_textf(font_native, al_map_rgb(0, 0, 0), x, y + 1,
+				ALLEGRO_ALIGN_CENTRE, "%u", n);
+		al_draw_textf(font_native, al_map_rgb(255, 255, 255), x, y,
+				ALLEGRO_ALIGN_CENTRE, "%u", n);
+	}
 }
 
 void draw_floors(void) {

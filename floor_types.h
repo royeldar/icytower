@@ -4,6 +4,7 @@ struct floor_type {
 	ALLEGRO_BITMAP *left;
 	ALLEGRO_BITMAP *mid;
 	ALLEGRO_BITMAP *right;
+	ALLEGRO_BITMAP *sign;
 };
 
 extern const struct floor_type *floor_types;
