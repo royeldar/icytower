@@ -13,9 +13,20 @@
 IT_STATE it_state;
 int keys;
 
+enum {
+	ANIMATION_IDLE,
+	ANIMATION_WALK_LEFT,
+	ANIMATION_WALK_RIGHT,
+	ANIMATION_ROTATE
+} animation;
+
+int animation_frame;
+
 void initialize_game(void) {
 	init_state(&it_state, rejump, time(NULL));
 	keys = 0;
+	animation = ANIMATION_IDLE;
+	animation_frame = 0;
 }
 
 void press_left(void) { keys |= KEY_LEFT; }
@@ -27,6 +38,7 @@ void release_jump(void) { keys &= ~KEY_JUMP; }
 
 void do_tick(void) {
 	play_frame(&it_state, keys);
+	++animation_frame;
 }
 
 void draw_background(void) {
@@ -79,8 +91,25 @@ void draw_floors(void) {
 }
 
 void draw_character(void) {
-	al_draw_bitmap(characters[character_index].gfx.idle1,
+	switch (animation) {
+	case ANIMATION_IDLE:
+		switch ((animation_frame / 13) % 4) {
+		case 0:
+		case 2:
+			al_draw_bitmap(characters[character_index].gfx.idle1,
 			it_state.x - 14, it_state.y - 51, 0);
+			break;
+		case 1:
+			al_draw_bitmap(characters[character_index].gfx.idle2,
+			it_state.x - 14, it_state.y - 51, 0);
+			break;
+		case 3:
+			al_draw_bitmap(characters[character_index].gfx.idle3,
+			it_state.x - 14, it_state.y - 51, 0);
+			break;
+		}
+		break;
+	}
 }
 
 void draw_game(void) {
