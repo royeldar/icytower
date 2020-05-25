@@ -47,12 +47,12 @@ void do_tick(void) {
 	play_frame(&it_state, keys);
 	switch (it_state.status) {
 	case STATUS_IDLE:
-		if (it_state.dx > 0.05) {
+		if (it_state.dx > 0.04) {
 			if (animation != ANIMATION_WALK_RIGHT) {
 				animation = ANIMATION_WALK_RIGHT;
 				animation_frame = 0;
 			}
-		} else if (it_state.dx < -0.05) {
+		} else if (it_state.dx < -0.04) {
 			if (animation != ANIMATION_WALK_LEFT) {
 				animation = ANIMATION_WALK_LEFT;
 				animation_frame = 0;
@@ -72,12 +72,12 @@ void do_tick(void) {
 	case STATUS_FLY_UP:
 	case STATUS_FLY_IDLE:
 	case STATUS_FLY_DOWN:
-		if (it_state.dx > 0.05) {
+		if (it_state.dx > 0.04) {
 			if (animation != ANIMATION_FLY_RIGHT) {
 				animation = ANIMATION_FLY_RIGHT;
 				animation_frame = 0;
 			}
-		} else if (it_state.dx < -0.05) {
+		} else if (it_state.dx < -0.04) {
 			if (animation != ANIMATION_FLY_LEFT) {
 				animation = ANIMATION_FLY_LEFT;
 				animation_frame = 0;
