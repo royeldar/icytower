@@ -74,7 +74,7 @@ void do_tick(void) {
 	case STATUS_FLY_DOWN:
 		if (animation == ANIMATION_ROTATE)
 			break;
-		if (it_state.dy < -22.3) {
+		if (it_state.dy < -22) {
 			animation = ANIMATION_ROTATE;
 			animation_frame = 0;
 		} else if (it_state.dx > 0.045) {
