@@ -47,12 +47,12 @@ void do_tick(void) {
 	play_frame(&it_state, keys);
 	switch (it_state.status) {
 	case STATUS_IDLE:
-		if (it_state.dx > 0.04) {
+		if (it_state.dx > 0.045) {
 			if (animation != ANIMATION_WALK_RIGHT) {
 				animation = ANIMATION_WALK_RIGHT;
 				animation_frame = 0;
 			}
-		} else if (it_state.dx < -0.04) {
+		} else if (it_state.dx < -0.045) {
 			if (animation != ANIMATION_WALK_LEFT) {
 				animation = ANIMATION_WALK_LEFT;
 				animation_frame = 0;
@@ -72,12 +72,17 @@ void do_tick(void) {
 	case STATUS_FLY_UP:
 	case STATUS_FLY_IDLE:
 	case STATUS_FLY_DOWN:
-		if (it_state.dx > 0.04) {
+		if (animation == ANIMATION_ROTATE)
+			break;
+		if (it_state.dy < -22.3) {
+			animation = ANIMATION_ROTATE;
+			animation_frame = 0;
+		} else if (it_state.dx > 0.045) {
 			if (animation != ANIMATION_FLY_RIGHT) {
 				animation = ANIMATION_FLY_RIGHT;
 				animation_frame = 0;
 			}
-		} else if (it_state.dx < -0.04) {
+		} else if (it_state.dx < -0.045) {
 			if (animation != ANIMATION_FLY_LEFT) {
 				animation = ANIMATION_FLY_LEFT;
 				animation_frame = 0;
@@ -267,6 +272,15 @@ void draw_character(void) {
 				it_state.x - width / 2 + 1,
 				it_state.y - height + 1,
 				0);
+		break;
+	case ANIMATION_ROTATE:
+		character = characters[character_index].gfx.rotate;
+		width = al_get_bitmap_width(character);
+		height = al_get_bitmap_height(character);
+		al_draw_rotated_bitmap(character,
+				width / 2, height / 2,
+				it_state.x, it_state.y - height / 2,
+				ALLEGRO_PI * (animation_frame % 30) / 15.0, 0);
 		break;
 	}
 }
