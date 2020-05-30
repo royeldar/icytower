@@ -3,9 +3,9 @@ An open source remake of Icy Tower 1.3.1 using Allegro 5
 
 The gfx+sfx resources were extracted from the original datafiles
 
-The physics engine is thanks to RaMMicHaeL:
+The physics engine is thanks to RaMMicHaeL: see
 
-	see https://rammichael.com/revealing-the-secrets-of-icy-tower-v1-3-1
+	https://rammichael.com/revealing-the-secrets-of-icy-tower-v1-3-1
 
 ## How to build
 In order to build the program, first install Allegro5
