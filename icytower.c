@@ -179,6 +179,12 @@ int main() {
 				do_tick();
 				draw_game();
 				break;
+			case PAUSE:
+				draw_pause();
+				break;
+			case ESCAPE:
+				draw_escape();
+				break;
 			case EXIT:
 				game_running = false;
 				break;

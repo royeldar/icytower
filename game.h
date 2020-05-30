@@ -10,3 +10,5 @@ void release_jump(void);
 void do_tick(void);
 
 void draw_game(void);
+void draw_pause(void);
+void draw_escape(void);

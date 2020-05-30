@@ -309,3 +309,34 @@ void draw_game(void) {
 	draw_floors();
 	draw_character();
 }
+
+void draw_grid(void) {
+	unsigned int x, y;
+	al_lock_bitmap(al_get_target_bitmap(),
+			ALLEGRO_PIXEL_FORMAT_ANY,
+			ALLEGRO_LOCK_READWRITE);
+	for (x = 0; x < 640; x += 2)
+		for (y = 0; y < 480; y += 2)
+			al_put_pixel(x, y, al_map_rgb(0, 0, 0));
+	al_unlock_bitmap(al_get_target_bitmap());
+}
+
+void draw_pause(void) {
+	draw_game();
+	draw_grid();
+	al_draw_text(font_color, al_map_rgb(255, 255, 255),
+			190, 160, 0, "GAME PAUSED");
+	al_draw_text(font_mono, al_map_rgb(255, 255, 255),
+			132, 210, 0, "PRESS ANY KEY TO RESUME");
+}
+
+void draw_escape(void) {
+	draw_game();
+	draw_grid();
+	al_draw_text(font_color, al_map_rgb(255, 255, 255),
+			23, 160, 0, "DO YOU REALLY WANT TO EXIT?");
+	al_draw_text(font_mono, al_map_rgb(255, 255, 255),
+			132, 210, 0, "PRESS ANY KEY TO RESUME");
+	al_draw_text(font_mono, al_map_rgb(255, 255, 255),
+			190, 240, 0, "PRESS ESC TO EXIT");
+}
