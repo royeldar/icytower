@@ -318,6 +318,28 @@ void draw_walls(void) {
 	}
 }
 
+void draw_hud(void) {
+	al_draw_bitmap(bitmap_clock, 4, 10, 0);
+	al_draw_rotated_bitmap(bitmap_clock_hand, 8, 29, 40, 57,
+			ALLEGRO_PI * it_state.speed_counter / 750.0, 0);
+
+	al_draw_textf(font_color, al_map_rgb(255, 255, 255),
+			8, 440, 0, "SCORE: %d",
+			it_state.floor * 10 + it_state.score);
+
+	al_draw_bitmap(bitmap_combo_meter, 20, 100, 0);
+	if (it_state.combo_timer > 0) {
+		al_draw_bitmap_region(bitmap_combo_liquid,
+				0, 100 - it_state.combo_timer,
+				16, it_state.combo_timer,
+				31, 219 - it_state.combo_timer, 0);
+		al_draw_bitmap(bitmap_combo_count, -10, 210, 0);
+		al_draw_textf(font_color, al_map_rgb(255, 255, 255),
+				40, 214, ALLEGRO_ALIGN_CENTRE,
+				"%u", it_state.combo_floor);
+	}
+}
+
 void draw_game(void) {
 	if (fullscreen)
 		al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -325,6 +347,7 @@ void draw_game(void) {
 	draw_floors();
 	draw_character();
 	draw_walls();
+	draw_hud();
 }
 
 void draw_grid(void) {
