@@ -66,6 +66,8 @@ void start_game(void) {
 	play_music(characters[character_index].sfx.bgmusic);
 	initialize_game();
 	draw_game();
+	al_play_sample(characters[character_index].sfx.greeting, volume_sfx / 10.0,
+			0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
 }
 
 void pause_game(void) {

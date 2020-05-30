@@ -68,13 +68,30 @@ void do_tick(void) {
 				animation_frame = 0;
 			}
 		}
+		if (prev_status != STATUS_IDLE)
+			al_play_sample(sample_step, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
 		break;
 	case STATUS_FLY_UP:
+		if (prev_status == STATUS_IDLE) {
+			if (it_state.dy < -22.2)
+				al_play_sample(characters[character_index].sfx.jumphi,
+						volume_sfx / 10.0, 0, 1,
+						ALLEGRO_PLAYMODE_ONCE, NULL);
+			else if (it_state.dy < -15.6)
+				al_play_sample(characters[character_index].sfx.jumpmed,
+						volume_sfx / 10.0, 0, 1,
+						ALLEGRO_PLAYMODE_ONCE, NULL);
+			else
+				al_play_sample(characters[character_index].sfx.jumplo,
+						volume_sfx / 10.0, 0, 1,
+						ALLEGRO_PLAYMODE_ONCE, NULL);
+		}
 	case STATUS_FLY_IDLE:
 	case STATUS_FLY_DOWN:
 		if (animation == ANIMATION_ROTATE)
 			break;
-		if (it_state.dy < -22) {
+		if (it_state.dy < -22.2) {
 			animation = ANIMATION_ROTATE;
 			animation_frame = 0;
 		} else if (it_state.dx > 0.045) {
