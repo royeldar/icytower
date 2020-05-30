@@ -308,12 +308,23 @@ void draw_character(void) {
 	}
 }
 
+void draw_walls(void) {
+	int y = -((80 - it_state.screen_y % 80) % 80) * 1.55;
+	for (; y < 480; y += 124) {
+		al_draw_bitmap(bitmap_sideblock, 640 - 75, y, 0);
+		al_draw_bitmap(bitmap_sideblock,
+				75 - al_get_bitmap_width(bitmap_sideblock), y,
+				ALLEGRO_FLIP_HORIZONTAL);
+	}
+}
+
 void draw_game(void) {
 	if (fullscreen)
 		al_clear_to_color(al_map_rgb(0, 0, 0));
 	draw_background();
 	draw_floors();
 	draw_character();
+	draw_walls();
 }
 
 void draw_grid(void) {
