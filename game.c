@@ -400,7 +400,7 @@ void draw_hud(void) {
 
 void draw_game(void) {
 	if (fullscreen)
-		al_clear_to_color(al_map_rgb(0, 0, 0));
+		al_clear_to_color(al_map_rgb(20, 20, 20));
 	draw_background();
 	draw_floors();
 	draw_character();
