@@ -43,13 +43,20 @@ void release_jump(void) { keys &= ~KEY_JUMP; }
 
 void do_tick(void) {
 	int prev_status = it_state.status;
+	int prev_floor = it_state.floor;
 	if (!play_frame(&it_state, keys)) {
 		al_play_sample(characters[character_index].sfx.death,
 				volume_sfx / 10.0, 0, 1,
 				ALLEGRO_PLAYMODE_ONCE, NULL);
+		al_play_sample(sample_gameover, volume_sfx / 10.0, 0, 1,
+				ALLEGRO_PLAYMODE_ONCE, NULL);
 		game_state = GAMEOVER;
 		return;
 	}
+
+	if (it_state.floor / 50 > prev_floor / 50)
+		al_play_sample(sample_aight, volume_sfx / 10.0, 0, 1,
+				ALLEGRO_PLAYMODE_ONCE, NULL);
 
 	switch (it_state.status) {
 	case STATUS_IDLE:
