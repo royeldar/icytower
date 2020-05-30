@@ -21,6 +21,10 @@ void enable_fullscreen(void) {
 	al_scale_transform(&t, scale, scale);
 	al_translate_transform(&t, offset_x, offset_y);
 	al_use_transform(&t);
+
+	al_clear_to_color(al_map_rgb(0, 0, 0));
+	al_set_clipping_rectangle(offset_x + 0.5, offset_y + 0.5,
+			640.0 * scale + 0.5, 480.0 * scale + 0.5);
 }
 
 void disable_fullscreen(void) {
@@ -29,4 +33,6 @@ void disable_fullscreen(void) {
 	al_set_display_flag(display, ALLEGRO_FULLSCREEN_WINDOW, false);
 	al_identity_transform(&t);
 	al_use_transform(&t);
+
+	al_reset_clipping_rectangle();
 }
