@@ -1,12 +1,19 @@
-CC	:= gcc
-CFLAGS	:= -Wall
-LDLIBS	:= -lallegro -lallegro_main -lallegro_image -lallegro_font -lallegro_audio -lallegro_acodec
+CC	:= x86_64-w64-mingw32-gcc
+CFLAGS	:= -Wall -Iallegro/include -O2
+LDLIBS	:= -lallegro.dll -lallegro_main.dll -lallegro_image.dll -lallegro_font.dll -lallegro_audio.dll -lallegro_acodec.dll
+LDFLAGS	:= -Lallegro/lib
+
+DLLS	:= allegro/bin/allegro-5.2.dll allegro/bin/allegro_image-5.2.dll allegro/bin/allegro_font-5.2.dll allegro/bin/allegro_audio-5.2.dll allegro/bin/allegro_acodec-5.2.dll
 
 .PHONY: all clean
 
-all: icytower
+all: build/icytower.exe
+	cp -r gfx sfx build/
+	cp $(DLLS) build/
 
-icytower: icytower.o gfx.o sfx.o menu.o options.o characters.o floor_types.o fullscreen.o game.o physics.o
+build/icytower.exe: icytower.o gfx.o sfx.o menu.o options.o characters.o floor_types.o fullscreen.o game.o physics.o
+	mkdir -p build
+	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 icytower.o: icytower.c icytower.h gfx.h sfx.h menu.h options.h characters.h floor_types.h game.h
 gfx.o: gfx.c gfx.h
@@ -20,4 +27,4 @@ game.o: game.c game.h icytower.h gfx.h sfx.h options.h characters.h floor_types.
 physics.o: physics.c physics.h
 
 clean:
-	rm -f icytower *.o
+	rm -rf *.o build
