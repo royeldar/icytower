@@ -235,6 +235,12 @@ int main() {
 				break;
 			case PAUSE:
 				game_state = PLAYING;
+				if (event.keyboard.keycode == key_left)
+					press_left();
+				else if (event.keyboard.keycode == key_right)
+					press_right();
+				else if (event.keyboard.keycode == key_jump)
+					press_jump();
 				break;
 			case ESCAPE:
 				if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -244,6 +250,12 @@ int main() {
 					main_menu();
 				} else {
 					game_state = PLAYING;
+					if (event.keyboard.keycode == key_left)
+						press_left();
+					else if (event.keyboard.keycode == key_right)
+						press_right();
+					else if (event.keyboard.keycode == key_jump)
+						press_jump();
 				}
 				break;
 			case EXIT:
