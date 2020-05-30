@@ -44,6 +44,7 @@ void release_jump(void) { keys &= ~KEY_JUMP; }
 void do_tick(void) {
 	int prev_status = it_state.status;
 	int prev_floor = it_state.floor;
+	int prev_combo_timer = it_state.combo_timer;
 	if (!play_frame(&it_state, keys)) {
 		al_play_sample(characters[character_index].sfx.death,
 				volume_sfx / 10.0, 0, 1,
@@ -54,9 +55,50 @@ void do_tick(void) {
 		return;
 	}
 
+	if (it_state.speed_counter == 1500) {
+		al_play_sample(sample_ring, volume_sfx / 10.0, 0, 1,
+				ALLEGRO_PLAYMODE_ONCE, NULL);
+		al_play_sample(sample_hurryup, volume_sfx / 10.0, 0, 1,
+				ALLEGRO_PLAYMODE_ONCE, NULL);
+	}
+
 	if (it_state.floor / 50 > prev_floor / 50)
 		al_play_sample(sample_aight, volume_sfx / 10.0, 0, 1,
 				ALLEGRO_PLAYMODE_ONCE, NULL);
+
+	if (prev_combo_timer > 0 && it_state.combo_timer == 0
+			&& it_state.combo_count > 1) {
+		if (it_state.combo_floor >= 200)
+			al_play_sample(sample_unbelievable, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else if (it_state.combo_floor >= 140)
+			al_play_sample(sample_splendid, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else if (it_state.combo_floor >= 100)
+			al_play_sample(sample_fantastic, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else if (it_state.combo_floor >= 70)
+			al_play_sample(sample_extreme, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else if (it_state.combo_floor >= 50)
+			al_play_sample(sample_amazing, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else if (it_state.combo_floor >= 35)
+			al_play_sample(sample_wow, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else if (it_state.combo_floor >= 25)
+			al_play_sample(sample_super, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else if (it_state.combo_floor >= 15)
+			al_play_sample(sample_great, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else if (it_state.combo_floor >= 7)
+			al_play_sample(sample_sweet, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		else
+			al_play_sample(sample_good, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+	}
 
 	switch (it_state.status) {
 	case STATUS_IDLE:
