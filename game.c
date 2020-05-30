@@ -319,6 +319,7 @@ void draw_walls(void) {
 }
 
 void draw_hud(void) {
+	static unsigned int combo_timeout_count = 0;
 	al_draw_bitmap(bitmap_clock, 4, 10, 0);
 	al_draw_rotated_bitmap(bitmap_clock_hand, 8, 29, 40, 57,
 			ALLEGRO_PI * it_state.speed_counter / 750.0, 0);
@@ -337,6 +338,14 @@ void draw_hud(void) {
 		al_draw_textf(font_color, al_map_rgb(255, 255, 255),
 				40, 214, ALLEGRO_ALIGN_CENTRE,
 				"%u", it_state.combo_floor);
+		combo_timeout_count = 0;
+	} else if (it_state.combo_count > 1) {
+		if (combo_timeout_count++ < 75) {
+			al_draw_bitmap(bitmap_combo_count, -10, 210, 0);
+			al_draw_textf(font_color, al_map_rgb(255, 255, 255),
+					40, 214, ALLEGRO_ALIGN_CENTRE,
+					"%u", it_state.combo_floor);
+		}
 	}
 }
 
