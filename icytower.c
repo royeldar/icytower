@@ -267,6 +267,10 @@ int main() {
 						press_jump();
 				}
 				break;
+			case GAMEOVER:
+				game_state = TITLE;
+				main_menu();
+				break;
 			case EXIT:
 				break;
 			}
