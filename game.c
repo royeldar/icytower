@@ -433,5 +433,20 @@ void draw_escape(void) {
 
 void draw_gameover(void) {
 	draw_game();
-	/* TODO */
+	al_draw_bitmap(bitmap_gameover, 96, 175, 0);
+	al_draw_text(font_color, al_map_rgb(255, 255, 255),
+			140, 275, 0, "SCORE:");
+	al_draw_textf(font_color, al_map_rgb(255, 255, 255),
+			500, 275, ALLEGRO_ALIGN_RIGHT,
+			"%u", it_state.floor * 10 + it_state.score);
+	al_draw_text(font_color, al_map_rgb(255, 255, 255),
+			140, 315, 0, "LEVEL:");
+	al_draw_textf(font_color, al_map_rgb(255, 255, 255),
+			500, 315, ALLEGRO_ALIGN_RIGHT,
+			"%u", it_state.floor);
+	al_draw_text(font_color, al_map_rgb(255, 255, 255),
+			140, 355, 0, "BEST COMBO:");
+	al_draw_textf(font_color, al_map_rgb(255, 255, 255),
+			500, 355, ALLEGRO_ALIGN_RIGHT,
+			"%u", it_state.combo);
 }
