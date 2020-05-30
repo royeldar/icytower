@@ -23,6 +23,9 @@ void enable_fullscreen(void) {
 	al_use_transform(&t);
 
 	al_clear_to_color(al_map_rgb(0, 0, 0));
+	al_flip_display();
+	al_clear_to_color(al_map_rgb(0, 0, 0));
+
 	al_set_clipping_rectangle(offset_x + 0.5, offset_y + 0.5,
 			640.0 * scale + 0.5, 480.0 * scale + 0.5);
 }
