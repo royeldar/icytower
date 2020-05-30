@@ -185,6 +185,9 @@ int main() {
 			case ESCAPE:
 				draw_escape();
 				break;
+			case GAMEOVER:
+				draw_gameover();
+				break;
 			case EXIT:
 				game_running = false;
 				break;

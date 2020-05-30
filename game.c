@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include "game.h"
+#include "icytower.h"
 #include "gfx.h"
 #include "sfx.h"
 #include "options.h"
@@ -44,7 +45,14 @@ void release_jump(void) { keys &= ~KEY_JUMP; }
 
 void do_tick(void) {
 	int prev_status = it_state.status;
-	play_frame(&it_state, keys);
+	if (!play_frame(&it_state, keys)) {
+		al_play_sample(characters[character_index].sfx.death,
+				volume_sfx / 10.0, 0, 1,
+				ALLEGRO_PLAYMODE_ONCE, NULL);
+		game_state = GAMEOVER;
+		return;
+	}
+
 	switch (it_state.status) {
 	case STATUS_IDLE:
 		if (it_state.dx > 0.045) {
@@ -339,4 +347,9 @@ void draw_escape(void) {
 			132, 210, 0, "PRESS ANY KEY TO RESUME");
 	al_draw_text(font_mono, al_map_rgb(255, 255, 255),
 			190, 240, 0, "PRESS ESC TO EXIT");
+}
+
+void draw_gameover(void) {
+	draw_game();
+	/* TODO */
 }

@@ -16,7 +16,7 @@ options.o: options.c options.h
 characters.o: characters.c characters.h gfx.h sfx.h
 floor_types.o: floor_types.c floor_types.h gfx.h
 fullscreen.o: fullscreen.c fullscreen.h
-game.o: game.c game.h gfx.h sfx.h options.h characters.h floor_types.h physics.h
+game.o: game.c game.h icytower.h gfx.h sfx.h options.h characters.h floor_types.h physics.h
 physics.o: physics.c physics.h
 
 clean:
