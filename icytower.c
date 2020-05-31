@@ -268,8 +268,12 @@ int main() {
 				}
 				break;
 			case GAMEOVER:
-				game_state = TITLE;
-				main_menu();
+				if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+					al_play_sample(sample_tryagain, volume_sfx / 10.0,
+							0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+					game_state = TITLE;
+					main_menu();
+				}
 				break;
 			case EXIT:
 				break;
