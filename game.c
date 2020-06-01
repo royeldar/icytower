@@ -62,7 +62,8 @@ void do_tick(void) {
 				ALLEGRO_PLAYMODE_ONCE, NULL);
 	}
 
-	if (it_state.floor / 50 > prev_floor / 50)
+	if (it_state.floor <= 1000 ? it_state.floor / 50 > prev_floor / 50 :
+			it_state.floor / 500 > prev_floor / 500)
 		al_play_sample(sample_aight, volume_sfx / 10.0, 0, 1,
 				ALLEGRO_PLAYMODE_ONCE, NULL);
 
