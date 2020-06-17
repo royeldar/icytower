@@ -288,6 +288,8 @@ void menu_left(void) {
 					volume_music / 10.0);
 			al_set_audio_stream_gain(audio_stream_bg_beat,
 					volume_music / 10.0);
+			al_set_audio_stream_gain(audio_stream_disco_dave_bg_dave,
+					volume_music / 10.0);
 			break;
 		}
 		break;
@@ -345,6 +347,8 @@ void menu_right(void) {
 			al_set_audio_stream_gain(audio_stream_bg_menu,
 					volume_music / 10.0);
 			al_set_audio_stream_gain(audio_stream_bg_beat,
+					volume_music / 10.0);
+			al_set_audio_stream_gain(audio_stream_disco_dave_bg_dave,
 					volume_music / 10.0);
 			break;
 		}
