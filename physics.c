@@ -6,7 +6,7 @@ void init_state(IT_STATE *its, int rejump, unsigned int seed)
 
 	its->x = 200;
 	its->y = 431;
-	its->dx = 0.001;
+	its->dx = 0.000833333353511989116668701171875;
 	its->dy = 0;
 
 	its->status = STATUS_IDLE;
@@ -74,10 +74,10 @@ int play_frame(IT_STATE *its, int keys)
 		if(its->speed < 5)
 		{
 			its->speed_counter++;
-			if(its->speed_counter > 1500)
+			if(its->speed_counter > 1800)
 			{
 				its->speed++;
-				its->speed_counter -= 1500;
+				its->speed_counter -= 1800;
 			}
 		}
 	}
@@ -115,19 +115,19 @@ void handle_keys(IT_STATE *its, int keys)
 	if(keys & KEY_LEFT)
 	{
 		if(its->dx > 0)
-			its->dx *= 0.7;
+			its->dx *= 0.74287378787994384765625;
 
-		its->dx -= 0.3;
+		its->dx -= 0.25;
 	}
 	else if(keys & KEY_RIGHT)
 	{
 		if(its->dx < 0)
-			its->dx *= 0.7;
+			its->dx *= 0.74287378787994384765625;
 
-		its->dx += 0.3;
+		its->dx += 0.25;
 	}
 	else
-		its->dx *= 0.9;
+		its->dx *= 0.915943682193756103515625;
 
 	if(its->rejump)
 	{
@@ -158,34 +158,34 @@ int jump(IT_STATE *its)
 	if(its->dy > 0)
 		its->dy = -its->dy;
 
-	if(its->dy > -12.2)
-		its->dy = -12.2;
+	if(its->dy > -10.16666698455810546875)
+		its->dy = -10.16666698455810546875;
 
 	return 1;
 }
 
 void handle_pos(IT_STATE *its)
 {
-	if(its->dx > 12.2)
-		its->dx = 12.2;
-	else if(its->dx < -12.2)
-		its->dx = -12.2;
+	if(its->dx > 10.16666698455810546875)
+		its->dx = 10.16666698455810546875;
+	else if(its->dx < -10.16666698455810546875)
+		its->dx = -10.16666698455810546875;
 
-	if(its->dy > 12.2)
-		its->dy = 12.2;
-	else if(its->dy < -100) // yea that's useless
-		its->dy = -100;
+	if(its->dy > 10.16666698455810546875)
+		its->dy = 10.16666698455810546875;
+	else if(its->dy < -83.33333587646484375) // yea that's useless
+		its->dy = -83.33333587646484375;
 
 	its->x += its->dx;
 	if(its->x > 555)
 	{
 		its->x = 555;
-		its->dx *= -0.9;
+		its->dx *= -0.915943682193756103515625;
 	}
 	else if(its->x < 85)
 	{
 		its->x = 85;
-		its->dx *= -0.9;
+		its->dx *= -0.915943682193756103515625;
 	}
 
 	its->y += its->dy;
@@ -194,7 +194,7 @@ void handle_pos(IT_STATE *its)
 
 	if(its->status != STATUS_IDLE)
 	{
-		its->dy += 0.8;
+		its->dy += 0.666666686534881591796875;
 		if(its->status == STATUS_FLY_UP && its->dy>0)
 			its->status = STATUS_FLY_IDLE;
 	}
@@ -317,7 +317,7 @@ void handle_collision(IT_STATE *its, int prev_x, int prev_y)
 				its->combo_count = 1;
 			}
 
-			its->combo_timer = 100;
+			its->combo_timer = 120;
 		}
 		else if(floor_level != its->floor && its->combo_timer)
 			its->combo_timer = 1;
