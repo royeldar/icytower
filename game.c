@@ -55,7 +55,7 @@ void do_tick(void) {
 		return;
 	}
 
-	if (it_state.speed_counter == 1500) {
+	if (it_state.speed_counter == 1800) {
 		al_play_sample(sample_ring, volume_sfx / 10.0, 0, 1,
 				ALLEGRO_PLAYMODE_ONCE, NULL);
 		al_play_sample(sample_hurryup, volume_sfx / 10.0, 0, 1,
@@ -103,12 +103,12 @@ void do_tick(void) {
 
 	switch (it_state.status) {
 	case STATUS_IDLE:
-		if (it_state.dx > 0.045) {
+		if (it_state.dx > 0.0375) {
 			if (animation != ANIMATION_WALK_RIGHT) {
 				animation = ANIMATION_WALK_RIGHT;
 				animation_frame = 0;
 			}
-		} else if (it_state.dx < -0.045) {
+		} else if (it_state.dx < -0.0375) {
 			if (animation != ANIMATION_WALK_LEFT) {
 				animation = ANIMATION_WALK_LEFT;
 				animation_frame = 0;
@@ -130,11 +130,11 @@ void do_tick(void) {
 		break;
 	case STATUS_FLY_UP:
 		if (prev_status == STATUS_IDLE) {
-			if (it_state.dy < -22.2)
+			if (it_state.dy < -18.5)
 				al_play_sample(characters[character_index].sfx.jumphi,
 						volume_sfx / 10.0, 0, 1,
 						ALLEGRO_PLAYMODE_ONCE, NULL);
-			else if (it_state.dy < -15.6)
+			else if (it_state.dy < -13.0)
 				al_play_sample(characters[character_index].sfx.jumpmed,
 						volume_sfx / 10.0, 0, 1,
 						ALLEGRO_PLAYMODE_ONCE, NULL);
@@ -147,15 +147,15 @@ void do_tick(void) {
 	case STATUS_FLY_DOWN:
 		if (animation == ANIMATION_ROTATE)
 			break;
-		if (it_state.dy < -22.2) {
+		if (it_state.dy < -18.5) {
 			animation = ANIMATION_ROTATE;
 			animation_frame = 0;
-		} else if (it_state.dx > 0.045) {
+		} else if (it_state.dx > 0.0375) {
 			if (animation != ANIMATION_FLY_RIGHT) {
 				animation = ANIMATION_FLY_RIGHT;
 				animation_frame = 0;
 			}
-		} else if (it_state.dx < -0.045) {
+		} else if (it_state.dx < -0.0375) {
 			if (animation != ANIMATION_FLY_LEFT) {
 				animation = ANIMATION_FLY_LEFT;
 				animation_frame = 0;
@@ -227,7 +227,7 @@ void draw_character(void) {
 	int width, height;
 	switch (animation) {
 	case ANIMATION_IDLE:
-		switch ((animation_frame / 13) % 4) {
+		switch ((animation_frame / 16) % 4) {
 		case 0:
 		case 2:
 			character = characters[character_index].gfx.idle1;
@@ -256,7 +256,7 @@ void draw_character(void) {
 				0);
 		break;
 	case ANIMATION_WALK_LEFT:
-		switch ((animation_frame / 10) % 4) {
+		switch ((animation_frame / 12) % 4) {
 		case 0:
 			character = characters[character_index].gfx.walk1;
 			break;
@@ -278,7 +278,7 @@ void draw_character(void) {
 				ALLEGRO_FLIP_HORIZONTAL);
 		break;
 	case ANIMATION_WALK_RIGHT:
-		switch ((animation_frame / 10) % 4) {
+		switch ((animation_frame / 12) % 4) {
 		case 0:
 			character = characters[character_index].gfx.walk1;
 			break;
@@ -353,7 +353,7 @@ void draw_character(void) {
 		al_draw_rotated_bitmap(character,
 				width / 2, height / 2,
 				it_state.x, it_state.y - height / 2,
-				ALLEGRO_PI * (animation_frame % 30) / 15.0, 0);
+				ALLEGRO_PI * (animation_frame % 36) / 18.0, 0);
 		break;
 	}
 }
@@ -372,7 +372,7 @@ void draw_hud(void) {
 	static unsigned int combo_timeout_count = 0;
 	al_draw_bitmap(bitmap_clock, 4, 10, 0);
 	al_draw_rotated_bitmap(bitmap_clock_hand, 8, 29, 40, 57,
-			ALLEGRO_PI * it_state.speed_counter / 750.0, 0);
+			ALLEGRO_PI * it_state.speed_counter / 900.0, 0);
 
 	al_draw_textf(font_color, al_map_rgb(255, 255, 255),
 			8, 440, 0, "SCORE: %d",
@@ -381,16 +381,16 @@ void draw_hud(void) {
 	al_draw_bitmap(bitmap_combo_meter, 20, 100, 0);
 	if (it_state.combo_timer > 0) {
 		al_draw_bitmap_region(bitmap_combo_liquid,
-				0, 100 - it_state.combo_timer,
-				16, it_state.combo_timer,
-				31, 219 - it_state.combo_timer, 0);
+				0, 100 - (int)(it_state.combo_timer / 1.2),
+				16, (int)(it_state.combo_timer / 1.2),
+				31, 219 - (int)(it_state.combo_timer / 1.2), 0);
 		al_draw_bitmap(bitmap_combo_count, -10, 210, 0);
 		al_draw_textf(font_color, al_map_rgb(255, 255, 255),
 				40, 214, ALLEGRO_ALIGN_CENTRE,
 				"%u", it_state.combo_floor);
 		combo_timeout_count = 0;
 	} else if (it_state.combo_count > 1) {
-		if (combo_timeout_count++ < 75) {
+		if (combo_timeout_count++ < 90) {
 			al_draw_bitmap(bitmap_combo_count, -10, 210, 0);
 			al_draw_textf(font_color, al_map_rgb(255, 255, 255),
 					40, 214, ALLEGRO_ALIGN_CENTRE,
