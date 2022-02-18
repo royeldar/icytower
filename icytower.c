@@ -89,6 +89,8 @@ int main() {
 	ALLEGRO_EVENT event;
 	bool redraw;
 	bool game_running;
+	bool paused;
+	bool dont_draw;
 
 	if (!initialize())
 		goto cleanup;
@@ -147,6 +149,8 @@ int main() {
 
 	game_running = true;
 	redraw = true;
+	paused = false;
+	dont_draw = false;
 	al_start_timer(timer);
 	while (game_running) {
 		al_wait_for_event(event_queue, &event);
@@ -155,43 +159,32 @@ int main() {
 			goto cleanup;
 		case ALLEGRO_EVENT_DISPLAY_HALT_DRAWING:
 			al_acknowledge_drawing_halt(display);
-			al_stop_timer(timer);
+			dont_draw = true;
 			break;
 		case ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING:
 			al_acknowledge_drawing_resume(display);
-			al_resume_timer(timer);
+			dont_draw = false;
 			break;
 		case ALLEGRO_EVENT_DISPLAY_SWITCH_OUT:
 			/* pause the game */
+			paused = true;
 			break;
 		case ALLEGRO_EVENT_DISPLAY_SWITCH_IN:
 			/* resume the game */
+			paused = false;
 			break;
 		case ALLEGRO_EVENT_TIMER:
 			switch (game_state) {
-			case TITLE:
-				draw_menu();
-				break;
-			case INSTRUCTIONS:
-				draw_instructions();
-				break;
 			case PLAYING:
-				do_tick();
-				draw_game();
-				break;
-			case PAUSE:
-				draw_pause();
-				break;
-			case ESCAPE:
-				draw_escape();
-				break;
-			case GAMEOVER:
-				draw_gameover();
+				if (!paused)
+					do_tick();
 				break;
 			case EXIT:
 				game_running = false;
 				break;
 			}
+			// currently, redraw is coupled to physics tick
+			// but it shouldn't be that way!
 			redraw = true;
 			break;
 		case ALLEGRO_EVENT_KEY_DOWN:
@@ -290,7 +283,32 @@ int main() {
 			}
 			break;
 		}
-		if (redraw && al_is_event_queue_empty(event_queue)) {
+
+		// if there are events in queue, continue to process them
+		if (!al_is_event_queue_empty(event_queue))
+			continue;
+
+		if (redraw && !dont_draw) {
+			switch (game_state) {
+			case TITLE:
+				draw_menu();
+				break;
+			case INSTRUCTIONS:
+				draw_instructions();
+				break;
+			case PLAYING:
+				draw_game();
+				break;
+			case PAUSE:
+				draw_pause();
+				break;
+			case ESCAPE:
+				draw_escape();
+				break;
+			case GAMEOVER:
+				draw_gameover();
+				break;
+			}
 			al_flip_display();
 			redraw = false;
 		}
