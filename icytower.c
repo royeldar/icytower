@@ -291,7 +291,6 @@ int main() {
 			break;
 		}
 		if (redraw && al_is_event_queue_empty(event_queue)) {
-			al_wait_for_vsync();
 			al_flip_display();
 			redraw = false;
 		}
