@@ -100,7 +100,7 @@ int main() {
 		goto cleanup;
 	}
 
-	timer = al_create_timer(1.0 / 60.0);
+	timer = al_create_timer(1.0 / 50.0);
 	if (timer == NULL) {
 		printf("Failed to create a timer\n");
 		goto cleanup;
