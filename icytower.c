@@ -13,6 +13,7 @@
 #include "characters.h"
 #include "floor_types.h"
 #include "game.h"
+#include "highscore.h"
 
 bool initialize(void) {
 	if (!al_init()) {
@@ -139,6 +140,7 @@ int main() {
 
 	initialize_characters();
 	initialize_floor_types();
+	highscore_load();
 
 	initialize_music(audio_stream_bg_beat);
 	initialize_music(audio_stream_disco_dave_bg_dave);
@@ -261,11 +263,38 @@ int main() {
 				}
 				break;
 			case GAMEOVER:
-				if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+				if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE ||
+						event.keyboard.keycode == key_jump) {
 					al_play_sample(sample_tryagain, volume_sfx / 10.0,
 							0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
 					game_state = TITLE;
 					main_menu();
+				} else if (event.keyboard.keycode == ALLEGRO_KEY_H) {
+					game_state = HIGHSCORES;
+				}
+				break;
+			case NAME_ENTRY:
+				if (event.keyboard.keycode == ALLEGRO_KEY_UP)
+					name_entry_up();
+				else if (event.keyboard.keycode == ALLEGRO_KEY_DOWN)
+					name_entry_down();
+				else if (event.keyboard.keycode == ALLEGRO_KEY_LEFT)
+					name_entry_prev();
+				else if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT ||
+						event.keyboard.keycode == key_jump ||
+						event.keyboard.keycode == ALLEGRO_KEY_ENTER ||
+						event.keyboard.keycode == ALLEGRO_KEY_SPACE)
+					name_entry_next();
+				break;
+			case HIGHSCORES:
+				if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE ||
+						event.keyboard.keycode == key_jump) {
+					game_state = TITLE;
+					main_menu();
+				} else if (event.keyboard.keycode == ALLEGRO_KEY_LEFT) {
+					hs_view_left();
+				} else if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT) {
+					hs_view_right();
 				}
 				break;
 			case EXIT:
@@ -307,6 +336,12 @@ int main() {
 				break;
 			case GAMEOVER:
 				draw_gameover();
+				break;
+			case NAME_ENTRY:
+				draw_name_entry();
+				break;
+			case HIGHSCORES:
+				draw_highscores();
 				break;
 			}
 			al_flip_display();

@@ -6,9 +6,9 @@ LDLIBS	:= -lallegro -lallegro_main -lallegro_image -lallegro_font -lallegro_audi
 
 all: icytower
 
-icytower: icytower.o gfx.o sfx.o menu.o options.o characters.o floor_types.o fullscreen.o game.o physics.o
+icytower: icytower.o gfx.o sfx.o menu.o options.o characters.o floor_types.o fullscreen.o game.o physics.o highscore.o
 
-icytower.o: icytower.c icytower.h gfx.h sfx.h menu.h options.h characters.h floor_types.h game.h
+icytower.o: icytower.c icytower.h gfx.h sfx.h menu.h options.h characters.h floor_types.h game.h highscore.h
 gfx.o: gfx.c gfx.h
 sfx.o: sfx.c sfx.h
 menu.o: menu.c menu.h icytower.h gfx.h sfx.h options.h characters.h floor_types.h fullscreen.h
@@ -16,8 +16,9 @@ options.o: options.c options.h
 characters.o: characters.c characters.h gfx.h sfx.h
 floor_types.o: floor_types.c floor_types.h gfx.h
 fullscreen.o: fullscreen.c fullscreen.h
-game.o: game.c game.h icytower.h gfx.h sfx.h options.h characters.h floor_types.h physics.h
+game.o: game.c game.h icytower.h gfx.h sfx.h options.h characters.h floor_types.h physics.h highscore.h
 physics.o: physics.c physics.h
+highscore.o: highscore.c highscore.h
 
 clean:
 	rm -f icytower *.o

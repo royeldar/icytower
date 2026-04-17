@@ -25,6 +25,8 @@ void menu_up(void) {
 		menu_bullet -= 1;
 	else switch (menu_page) {
 	case MAIN_MENU:
+		menu_bullet = 5;
+		break;
 	case OPTIONS:
 		menu_bullet = 4;
 		break;
@@ -45,6 +47,8 @@ void menu_down(void) {
 	menu_bullet += 1;
 	switch (menu_page) {
 	case MAIN_MENU:
+		menu_bullet %= 6;
+		break;
 	case OPTIONS:
 		menu_bullet %= 5;
 		break;
@@ -90,6 +94,12 @@ void menu_enter(void) {
 			menu_bullet = 0;
 			break;
 		case 4:
+			/* HIGHSCORES */
+			al_play_sample(sample_menu_change, volume_sfx / 10.0,
+					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+			game_state = HIGHSCORES;
+			break;
+		case 5:
 			/* EXIT */
 			al_play_sample(sample_menu_change, volume_sfx / 10.0,
 					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
@@ -361,14 +371,14 @@ void menu_right(void) {
 void menu_escape(void) {
 	switch (menu_page) {
 	case MAIN_MENU:
-		if (menu_bullet == 4) {
+		if (menu_bullet == 5) {
 			al_play_sample(sample_menu_change, volume_sfx / 10.0,
 					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
 			game_state = EXIT;
 		} else {
 			al_play_sample(sample_menu_choose, volume_sfx / 10.0,
 					0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
-			menu_bullet = 4;
+			menu_bullet = 5;
 		}
 		break;
 	case OPTIONS:
@@ -464,7 +474,9 @@ void draw_menu(void) {
 		al_draw_text(font_color, al_map_rgb(255, 255, 255),
 				40, 270 + 28 * 3, 0, "OPTIONS");
 		al_draw_text(font_color, al_map_rgb(255, 255, 255),
-				40, 270 + 28 * 4, 0, "EXIT");
+				40, 270 + 28 * 4, 0, "HIGHSCORES");
+		al_draw_text(font_color, al_map_rgb(255, 255, 255),
+				40, 270 + 28 * 5, 0, "EXIT");
 		break;
 	case OPTIONS:
 		al_draw_text(font_color, al_map_rgb(255, 255, 255),
