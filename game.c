@@ -1,5 +1,6 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_audio.h>
+#include <string.h>
 #include <time.h>
 
 #include "game.h"
@@ -10,9 +11,17 @@
 #include "characters.h"
 #include "floor_types.h"
 #include "physics.h"
+#include "highscore.h"
 
 IT_STATE it_state;
 int keys;
+
+static int rank_score, rank_floor, rank_combo;
+static unsigned int val_score, val_floor, val_combo;
+static char entry_name[3] = "AA";
+static char last_name[3]  = "AA";
+static int  name_pos;
+static int  hs_view;
 
 enum {
 	ANIMATION_IDLE,
@@ -32,6 +41,7 @@ void initialize_game(void) {
 	keys = 0;
 	animation = ANIMATION_IDLE;
 	animation_frame = 0;
+	memcpy(last_name, hs_last_name, 3);
 }
 
 void press_left(void) { keys |= KEY_LEFT; }
@@ -51,7 +61,15 @@ void do_tick(void) {
 				ALLEGRO_PLAYMODE_ONCE, NULL);
 		al_play_sample(sample_gameover, volume_sfx / 10.0, 0, 1,
 				ALLEGRO_PLAYMODE_ONCE, NULL);
-		game_state = GAMEOVER;
+		val_score  = it_state.floor * 10 + it_state.score;
+		val_floor  = it_state.floor;
+		val_combo  = it_state.combo;
+		rank_score = highscore_submit(&hs_score, val_score);
+		rank_floor = highscore_submit(&hs_floor, val_floor);
+		rank_combo = highscore_submit(&hs_combo, val_combo);
+		memcpy(entry_name, last_name, 3);
+		name_pos = 0;
+		game_state = NAME_ENTRY;
 		return;
 	}
 
@@ -434,20 +452,160 @@ void draw_escape(void) {
 
 void draw_gameover(void) {
 	draw_game();
-	al_draw_bitmap(bitmap_gameover, 96, 175, 0);
-	al_draw_text(font_color, al_map_rgb(255, 255, 255),
-			140, 275, 0, "SCORE:");
-	al_draw_textf(font_color, al_map_rgb(255, 255, 255),
-			500, 275, ALLEGRO_ALIGN_RIGHT,
+	al_draw_bitmap(bitmap_gameover, 96, 145, 0);
+
+	ALLEGRO_COLOR white = al_map_rgb(255, 255, 255);
+
+	al_draw_text(font_color, white, 140, 245, 0, "SCORE:");
+	al_draw_textf(font_color, white, 500, 245, ALLEGRO_ALIGN_RIGHT,
 			"%u", it_state.floor * 10 + it_state.score);
-	al_draw_text(font_color, al_map_rgb(255, 255, 255),
-			140, 315, 0, "LEVEL:");
-	al_draw_textf(font_color, al_map_rgb(255, 255, 255),
-			500, 315, ALLEGRO_ALIGN_RIGHT,
+	if (rank_score > 0)
+		al_draw_textf(font_color, white, 510, 245, 0, "(#%d)", rank_score);
+
+	al_draw_text(font_color, white, 140, 285, 0, "LEVEL:");
+	al_draw_textf(font_color, white, 500, 285, ALLEGRO_ALIGN_RIGHT,
 			"%u", it_state.floor);
-	al_draw_text(font_color, al_map_rgb(255, 255, 255),
-			140, 355, 0, "BEST COMBO:");
-	al_draw_textf(font_color, al_map_rgb(255, 255, 255),
-			500, 355, ALLEGRO_ALIGN_RIGHT,
+	if (rank_floor > 0)
+		al_draw_textf(font_color, white, 510, 285, 0, "(#%d)", rank_floor);
+
+	al_draw_text(font_color, white, 140, 325, 0, "BEST COMBO:");
+	al_draw_textf(font_color, white, 500, 325, ALLEGRO_ALIGN_RIGHT,
 			"%u", it_state.combo);
+	if (rank_combo > 0)
+		al_draw_textf(font_color, white, 510, 325, 0, "(#%d)", rank_combo);
+}
+
+/* ---- name entry ---- */
+
+void name_entry_up(void) {
+	entry_name[name_pos] = entry_name[name_pos] == 'Z'
+			? 'A' : entry_name[name_pos] + 1;
+}
+
+void name_entry_down(void) {
+	entry_name[name_pos] = entry_name[name_pos] == 'A'
+			? 'Z' : entry_name[name_pos] - 1;
+}
+
+void name_entry_prev(void) {
+	if (name_pos > 0) name_pos--;
+}
+
+void name_entry_next(void) {
+	if (name_pos == 0) {
+		name_pos = 1;
+		return;
+	}
+	/* finalize */
+	entry_name[2] = '\0';
+	highscore_save_last_name(entry_name);
+
+	if (rank_score > 0)
+		memcpy(hs_score.entries[rank_score - 1].name, entry_name, 3);
+	if (rank_floor > 0)
+		memcpy(hs_floor.entries[rank_floor - 1].name, entry_name, 3);
+	if (rank_combo > 0)
+		memcpy(hs_combo.entries[rank_combo - 1].name, entry_name, 3);
+	highscore_save();
+
+	PLAYER_DATA *player = highscore_find_or_create_player(entry_name);
+	if (player) {
+		highscore_submit_personal(&player->score, val_score);
+		highscore_submit_personal(&player->floor, val_floor);
+		highscore_submit_personal(&player->combo, val_combo);
+		highscore_save_player(player);
+	}
+	game_state = GAMEOVER;
+}
+
+void draw_name_entry(void) {
+	draw_gameover();
+	/* vertically centred between bottom score line (325) and screen bottom (480) */
+	int label_y  = 383;
+	int letter_y = 410;
+	ALLEGRO_COLOR white = al_map_rgb(255, 255, 255);
+	ALLEGRO_COLOR dim   = al_map_rgb(110, 110, 110);
+
+	al_draw_text(font_color, white, 320, label_y, ALLEGRO_ALIGN_CENTRE,
+			"ENTER YOUR NAME");
+	for (int i = 0; i < 2; i++) {
+		int lx = 295 + i * 40;
+		if (i == name_pos) {
+			al_draw_textf(font_color, white, lx, letter_y,
+					ALLEGRO_ALIGN_CENTRE, "%c", entry_name[i]);
+			al_draw_text(font_mono, white, lx, letter_y + 18,
+					ALLEGRO_ALIGN_CENTRE, "_");
+		} else {
+			al_draw_textf(font_color, dim, lx, letter_y,
+					ALLEGRO_ALIGN_CENTRE, "%c", entry_name[i]);
+		}
+	}
+}
+
+/* ---- highscore screen ---- */
+
+void hs_view_left(void) {
+	hs_view = (hs_view == 0) ? (int)player_count : hs_view - 1;
+}
+
+void hs_view_right(void) {
+	hs_view = (hs_view >= (int)player_count) ? 0 : hs_view + 1;
+}
+
+/*
+ * Column layout (cx = column centre, column width ~213px):
+ *   global view  — value right at cx-26, name at cx-20, date at cx+2
+ *   player view  — value right at cx-10, date at cx+4
+ * Entries start half a row above where title+gap would normally place them.
+ */
+/* shift > 0: date moves right (score/floor)
+ * shift < 0: value+name move left by same amount (combo) */
+static void draw_hs_column(HIGHSCORE_LIST *list, const char *title,
+		int cx, int y, bool show_names, int shift) {
+	char datebuf[9];
+	int value_x = cx - 35 + (shift < 0 ? shift : 0);
+	int name_x  = cx - 29 + (shift < 0 ? shift : 0);
+	int date_x  = cx +  2 + (shift > 0 ? shift : 0);
+	int first_y = y + 50;
+
+	al_draw_text(font_color, al_map_rgb(255, 220, 0),
+			cx, y, ALLEGRO_ALIGN_CENTRE, title);
+
+	for (unsigned int i = 0; i < list->count; i++) {
+		struct tm *tm = localtime(&list->entries[i].date);
+		strftime(datebuf, sizeof datebuf, "%d.%m.%y", tm);
+		int row_y = first_y + (int)i * 22;
+
+		al_draw_textf(font_mono, al_map_rgb(255, 255, 255),
+				value_x, row_y, ALLEGRO_ALIGN_RIGHT,
+				"%u", list->entries[i].value);
+		if (show_names && list->entries[i].name[0])
+			al_draw_text(font_mono, al_map_rgb(200, 200, 200),
+					name_x, row_y, 0, list->entries[i].name);
+		al_draw_text(font_mono, al_map_rgb(160, 160, 160),
+				date_x, row_y, 0, datebuf);
+	}
+}
+
+void draw_highscores(void) {
+	al_draw_tinted_bitmap(bitmap_title_bg,
+			al_map_rgba_f(0.5f, 0.5f, 0.5f, 1.0f), 0, 0, 0);
+	if (hs_view == 0) {
+		al_draw_text(font_color, al_map_rgb(255, 220, 0),
+				320, 15, ALLEGRO_ALIGN_CENTRE, "HIGHSCORES");
+		draw_hs_column(&hs_score, "SCORE", 107, 45, true,   6);
+		draw_hs_column(&hs_floor, "FLOOR", 320, 45, true,   6);
+		draw_hs_column(&hs_combo, "COMBO", 533, 45, true,  -6);
+	} else {
+		PLAYER_DATA *p = &players[hs_view - 1];
+		al_draw_textf(font_color, al_map_rgb(255, 220, 0),
+				320, 15, ALLEGRO_ALIGN_CENTRE, "HIGHSCORES  %s", p->name);
+		draw_hs_column(&p->score, "SCORE", 107, 45, false,  6);
+		draw_hs_column(&p->floor, "FLOOR", 320, 45, false,  6);
+		draw_hs_column(&p->combo, "COMBO", 533, 45, false, -6);
+	}
+	/* 1.5 lines below last (15th) row: 45 + 50 + 14*22 + 11 + 22 = 436 */
+	al_draw_text(font_mono, al_map_rgb(160, 160, 160),
+			320, 436, ALLEGRO_ALIGN_CENTRE,
+			"< PER PLAYER >");
 }
